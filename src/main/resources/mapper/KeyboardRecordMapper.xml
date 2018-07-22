@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zta.efficiency.dao.KeyboardRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.zta.efficiency.model.KeyboardRecord" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="Name" property="name" jdbcType="VARCHAR" />
+    <result column="UserName" property="username" jdbcType="VARCHAR" />
+    <result column="FileName" property="filename" jdbcType="VARCHAR" />
+    <result column="Time" property="time" jdbcType="TIMESTAMP" />
+    <result column="count" property="count" jdbcType="INTEGER" />
+  </resultMap>
+  <!--<select id="selectKeyboardRecord" resultType="com.zta.efficiency.model.KeyboardRecord">-->
+        <!--select * from KeyboardRecord where id = #{id}-->
+    <!--</select>-->
+  <select id="selectKeyboardRecord"  resultType="com.zta.efficiency.model.KeyboardRecord">
+      select Name,COUNT(*) AS COUNT from KeyboardRecord t
+      <where>
+        <if test="{username}!=null">
+          t.UserName like #{username}
+        </if>
+          <![CDATA[and DateDiff(dd,[Time],getdate())<=7]]>
+      </where>
+    GROUP BY Name ORDER BY COUNT DESC
+</select>
+  <insert id="insert" parameterType="com.zta.efficiency.model.KeyboardRecord" >
+    insert into KeyboardRecord (id, Name, UserName, 
+      FileName, Time)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR}, 
+      #{filename,jdbcType=VARCHAR}, #{time,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.zta.efficiency.model.KeyboardRecord" >
+    insert into KeyboardRecord
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="name != null" >
+        Name,
+      </if>
+      <if test="username != null" >
+        UserName,
+      </if>
+      <if test="filename != null" >
+        FileName,
+      </if>
+      <if test="time != null" >
+        Time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="filename != null" >
+        #{filename,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null" >
+        #{time,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+</mapper>
